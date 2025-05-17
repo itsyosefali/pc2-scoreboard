@@ -1,5 +1,5 @@
 <template>
-  <div class="scoreboard-container dark-theme">
+  <div class="scoreboard-container dark-theme" >
     <div class="container is-max-widescreen">
       <h1 class="title has-text-centered is-size-1 has-text-weight-bold mb-6 glow-text">
         {{ contestName }}
@@ -134,16 +134,8 @@ export default {
 @import 'bulma/css/bulma.min.css';
 
 .scoreboard-container.dark-theme {
-  min-height: 100vh;
-  min-width: 100vw;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  
   color: #e6e6e6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
 }
 
 html, body {
