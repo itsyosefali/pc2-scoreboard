@@ -72,87 +72,50 @@
   </template>
 
   <script>
-import { XMLParser } from 'fast-xml-parser'
+  import { fetchContestData, fetchTeamData } from '../services/pc2Api';
 
-export default {
-  data() {
-    return {
-      contestName: "Programming Contest",
-      lastUpdated: new Date().toLocaleTimeString(),
-      problems: [], // Will be filled from XML
-      teams: []
-    }
-  },
-  computed: {
-    sortedTeams() {
-      return [...this.teams].sort((a, b) => {
-        if (b.solved !== a.solved) return b.solved - a.solved
-        return a.penalty - b.penalty
-      })
-    }
-  },
-  methods: {
-    getProblemClass(problem) {
+  export default {
+    data() {
       return {
-        'tag': true,
-        'is-success': problem.correct,
-        'is-danger': !problem.correct,
-        'is-medium': true,
-        'glow': problem.correct
+        contestName: "CET LCPC CETSU 2025",
+        lastUpdated: new Date().toLocaleTimeString(),
+        problems: Array.from({length: 10}, (_, i) => String.fromCharCode(65 + i)), // A-J
+        teams: []
       }
     },
-    getProblemSymbol(problem) {
-      return problem.correct ? '+' : '-'
-    },
-    updateScoreboard() {
-      this.lastUpdated = new Date().toLocaleTimeString()
-      this.fetchScoreboard()
-    },
-    async fetchScoreboard() {
-      try {
-        const res = await fetch('http://127.0.0.1:8000/results.xml')
-        const xml = await res.text()
-        const parser = new XMLParser({ ignoreAttributes: false }) // <-- ADD THIS OPTION
-        const data = parser.parse(xml)
-
-        const problemsArr = data.contestStandings.standingsHeader.problem
-        this.problems = Array.isArray(problemsArr)
-          ? problemsArr.map((p, idx) => String.fromCharCode(65 + idx))
-          : [String.fromCharCode(65)]
-
-        const teamArr = data.contestStandings.teamStanding
-        this.teams = (Array.isArray(teamArr) ? teamArr : [teamArr]).map(team => {
-          const problemInfos = Array.isArray(team.problemSummaryInfo)
-            ? team.problemSummaryInfo
-            : [team.problemSummaryInfo]
-          return {
-            name: team['@_teamName'],
-            solved: parseInt(team['@_solved']),
-            penalty: parseInt(team['@_lastSolved']),
-            problems: problemInfos.map(p => ({
-              correct: p['@_isSolved'] === "true",
-              attempts: parseInt(p['@_attempts'])
-            }))
-          }
+    computed: {
+      sortedTeams() {
+        return [...this.teams].sort((a, b) => {
+          if (b.solved !== a.solved) return b.solved - a.solved
+          return a.penalty - b.penalty
         })
-      } catch (e) {
-        console.error('Failed to fetch scoreboard:', e)
       }
+    },
+    methods: {
+      async loadData() {
+        const contestData = await fetchContestData();
+        this.contestName = contestData.name;
+        this.teams = await fetchTeamData();
+        this.lastUpdated = new Date().toLocaleTimeString();
+      },
+      getProblemSymbol(problem) {
+        return problem.correct ? '+' : '-'
+      },
+      updateScoreboard() {
+        this.lastUpdated = new Date().toLocaleTimeString();
+      }
+    },
+    mounted() {
+      this.loadData();
+      setInterval(this.updateScoreboard, 30000);
     }
-  },
-  mounted() {
-    this.fetchScoreboard()
-    setInterval(this.updateScoreboard, 30000)
   }
-}
-</script>
-
+  </script>
 
   <style>
   @import 'bulma/css/bulma.min.css';
 
   .scoreboard-container.dark-theme {
-    
     color: #e6e6e6;
   }
 

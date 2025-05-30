@@ -1,0 +1,26 @@
+{
+  "name": "pc2-scoreboard",
+  "version": "1.0.0",
+  "description": "A scoreboard application for PC2 contests.",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.2.0",
+    "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "vite": "^2.0.0",
+    "@vitejs/plugin-vue": "^1.2.0"
+  },
+  "keywords": [
+    "vue",
+    "pc2",
+    "scoreboard"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
